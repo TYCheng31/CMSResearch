@@ -11,4 +11,16 @@ sudo apt install python3 python3-pip python3-venv -y
 sudo apt install nginx -y  
 
 ## 步驟三：設定 Python 虛擬環境  
+### 建立一個專案目錄，例如 my_flask_app：  
+mkdir ~/my_flask_app  
+cd ~/my_flask_app  
+python3 -m venv venv  
+source venv/bin/activate  
+
+## 步驟四：安裝 Flask 及其他必要的 Python 套件  
+### 在虛擬環境中安裝 Flask 和 Gunicorn：  
+pip install Flask gunicorn  
+
+## 步驟五：撰寫 Flask 應用程式  
+### 在 my_flask_app 目錄下，建立一個 app.py 檔案，內容如下（根據你的需求調整）：  
 
