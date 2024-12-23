@@ -8,7 +8,8 @@ sudo apt upgrade -y
 ## 步驟二：安裝必要的套件  
 ### 安裝 Python 及相關工具：  
 ```
-sudo apt install python3 python3-pip python3-venv -y  
+sudo apt install python3
+python3-pip python3-venv -y  
 ```
 ### 安裝 Nginx：  
 ```
