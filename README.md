@@ -30,4 +30,15 @@ pip install Flask gunicorn
 ```
 ## 步驟五：撰寫 Flask 應用程式  
 ### 在 my_flask_app 目錄下，建立一個 app.py 檔案，內容如下（根據你的需求調整）：  
-
+### 建立 templates 目錄並在其中建立 index.html：  
+```
+mkdir templates
+```
+## 確保有一個 static/images 目錄來存放生成的圖片：  
+```
+mkdir -p static/images
+```
+## 步驟六：測試 Flask 應用  
+```
+python app.py
+```
