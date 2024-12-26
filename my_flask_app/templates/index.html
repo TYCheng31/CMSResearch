@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>CSV Viewer</title>
+</head>
+<body>
+    <h1>考試結果</h1>
+	    <form action="{{ url_for('run_script') }}" method="POST">
+		<button type="submit">取得結果</button>
+	    </form>   
+    <!-- 判斷是否有 CSV 資料 -->
+    {% if csv_data %}
+        <table border="1">
+            <!-- 先顯示表頭 (第一列) -->
+            <tr>
+                {% for header in csv_data[0] %}
+                    <th>{{ header }}</th>
+                {% endfor %}
+            </tr>
+            <!-- 再顯示資料內容 (從第二列開始) -->
+            {% for row in csv_data[1:] %}
+                <tr>
+                    {% for cell in row %}
+                        <td>{{ cell }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>目前沒有可顯示的 CSV 資料</p>
+    {% endif %}
+    
+    <!-- 提供按鈕來呼叫後端 /run 路由，執行程式 -->
+</body>
+</html>
+
