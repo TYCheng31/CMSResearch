@@ -34,7 +34,7 @@ pip install Flask gunicorn
 ```
 mkdir templates
 ```
-## 確保有一個 static/images 目錄來存放生成的圖片  
+### 確保有一個 static/images 目錄來存放生成的圖片  
 ```
 mkdir -p static/images
 ```
