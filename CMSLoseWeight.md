@@ -29,7 +29,7 @@ yes | for i in $(seq -w 1 75); do
 done
 ```
 ![image](https://github.com/user-attachments/assets/c0158a8d-1f17-43fd-8908-6cd4d5f149c8)  
-## 刪除Ranking紀錄  
+## 刪除Ranking紀錄及Question的紀錄
 ```
 yes | for i in $(seq -w 1 75); do
   cmsRemoveParticipation -c 1  S$i
