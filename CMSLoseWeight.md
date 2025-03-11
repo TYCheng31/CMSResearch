@@ -1,10 +1,5 @@
 # CMSLoseWeight減肥  
 目的:備份完比完賽的CMS，自動清理不需要得繳交紀錄，讓下一次考試可以直接有乾淨版本可以直接使用
-## 考試前虛擬機磁碟狀況  
-
-    
-## 剛考完試虛擬機磁碟狀況  
-![image](https://github.com/user-attachments/assets/0aa86cd1-36ba-4af5-acda-ae136090b392)
 
 ## 刪除單一使用者繳交紀錄  
 -c要刪除的Contest ID  
