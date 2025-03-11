@@ -8,8 +8,11 @@
 
 2.刪除/var/local/lib/cms/submissions資料夾中每一位user的繳交資料  
   
-![image](https://github.com/user-attachments/assets/a4de4aef-f2e6-478d-8ace-14a1d82ba3bc)  
-
+<p align="center">
+  <img src="![image](https://github.com/user-attachments/assets/a4de4aef-f2e6-478d-8ace-14a1d82ba3bc)" width="45%"/>
+  <img src="![image](https://github.com/user-attachments/assets/2465c71b-5663-421b-a72a-e0128b003999)  " width="45%"/>
+</p>
+  
 ## 刪除單一使用者繳交紀錄  
 -c要刪除的Contest ID  
 -u要刪除的User ID  
