@@ -1,4 +1,4 @@
-# CMSLoseWeight減肥  
+# cmsRemoveSubmissions  
 目的:備份完比完賽的CMS，自動清理不需要得繳交紀錄，讓下一次考試可以直接有乾淨版本可以直接使用  
 指令來源/usr/local/lib/python3.10/dist-packages/cms-1.5.dev0-py3.10.egg/cmscontrib/RemoveSubmissions.py  
 刪除資料庫中的submissions,submission_results,submission_files  
@@ -25,12 +25,6 @@ yes | for i in $(seq -w 1 75); do
 done
 ```
 ![image](https://github.com/user-attachments/assets/c0158a8d-1f17-43fd-8908-6cd4d5f149c8)  
-## 刪除Ranking紀錄及Question的紀錄  
-### 他跟Contest的已加入User綁在一起，所以考試需要重加入User
-```
-yes | for i in $(seq -w 1 75); do
-  cmsRemoveParticipation -c 1  S$i
-done
-```
+
 
 
