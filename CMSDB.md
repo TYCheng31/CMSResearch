@@ -5,6 +5,11 @@
 sudo -u postgres psql
 ```
   
+## 連接到CMS資料庫中    
+```  
+\c cmsdb;
+```
+  
 ## 查看目前資料庫中列表所佔用空間   
 
 ```  
