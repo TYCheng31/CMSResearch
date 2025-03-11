@@ -1,8 +1,8 @@
 # cmsRemoveParticipation  
   
-指令程式碼位置:/usr/local/lib/python3.10/dist-packages/cms-1.5.dev0-py3.10.egg/cmscontrib/RemoveSubmissions.py  
+指令程式碼位置:/usr/local/lib/python3.10/dist-packages/cms-1.5.dev0-py3.10.egg/cmscontrib/RemoveParticipation.py  
   
-刪除資料庫中的submissions,submission_results,submission_files  
+刪除資料庫中的participations 
   
 ![image](https://github.com/user-attachments/assets/a4de4aef-f2e6-478d-8ace-14a1d82ba3bc) 
   
