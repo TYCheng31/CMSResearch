@@ -8,8 +8,6 @@
 sudo cmsRemoveSubmissions -c 8 -u S01  
 ``` 
 ![image](https://github.com/user-attachments/assets/c3cfa183-0781-468e-ada3-e0bf263de8d6)  
-## 刪除繳交紀錄前後對比  
-![image](https://github.com/user-attachments/assets/ee42963c-274b-4566-9d3b-2b591d9c5e00)  
 ## 批量刪除(但是需要一個一個按Y確定)  
 ```
 for i in $(seq -w 1 75); do
