@@ -29,7 +29,8 @@ yes | for i in $(seq -w 1 75); do
 done
 ```
 ![image](https://github.com/user-attachments/assets/c0158a8d-1f17-43fd-8908-6cd4d5f149c8)  
-## 刪除Ranking紀錄及Question的紀錄
+## 刪除Ranking紀錄及Question的紀錄  
+### 他跟Contest的已加入User綁在一起，所以考試需要重加入User
 ```
 yes | for i in $(seq -w 1 75); do
   cmsRemoveParticipation -c 1  S$i
