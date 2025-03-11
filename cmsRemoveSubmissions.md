@@ -2,7 +2,8 @@
   
 指令程式碼位置:/usr/local/lib/python3.10/dist-packages/cms-1.5.dev0-py3.10.egg/cmscontrib/RemoveSubmissions.py  
 
-##刪除資料
+## 刪除資料  
+  
 1.刪除資料庫中的submissions,submission_results,submission_files  
 
 2.刪除/var/local/lib/cms/submissions資料夾中每一位user的繳交資料  
