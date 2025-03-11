@@ -4,13 +4,13 @@
 
 ## 刪除資料  
   
-1.刪除資料庫中的submissions,submission_results,submission_files  
+1.刪除資料庫中的submissions,submission_results,submission_files(圖一)    
 
-2.刪除/var/local/lib/cms/submissions資料夾中每一位user的繳交資料  
+2.刪除/var/local/lib/cms/submissions資料夾中每一位user的繳交資料(圖二)    
 
-| 圖片1 | 圖片2 |
+| 圖(一) | 圖(二) |
 |-------|-------|
-| ![](![image](https://github.com/user-attachments/assets/a4de4aef-f2e6-478d-8ace-14a1d82ba3bc)) | ![](![image](https://github.com/user-attachments/assets/2465c71b-5663-421b-a72a-e0128b003999)) |
+| ![image](https://github.com/user-attachments/assets/a4de4aef-f2e6-478d-8ace-14a1d82ba3bc) | ![image](https://github.com/user-attachments/assets/2465c71b-5663-421b-a72a-e0128b003999) |
   
 ## 刪除單一使用者繳交紀錄  
 -c要刪除的Contest ID  
