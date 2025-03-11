@@ -1,6 +1,8 @@
 # cmsRemoveSubmissions  
 目的:備份完比完賽的CMS，自動清理不需要得繳交紀錄，讓下一次考試可以直接有乾淨版本可以直接使用  
+  
 指令來源/usr/local/lib/python3.10/dist-packages/cms-1.5.dev0-py3.10.egg/cmscontrib/RemoveSubmissions.py  
+  
 刪除資料庫中的submissions,submission_results,submission_files  
 ![image](https://github.com/user-attachments/assets/a4de4aef-f2e6-478d-8ace-14a1d82ba3bc)  
 
