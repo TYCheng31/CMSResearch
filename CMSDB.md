@@ -1,4 +1,10 @@
 # CMSDB(PostgreSQL)相關指令  
+
+## 進入資料庫  
+```  
+sudo -u postgres psql
+```
+  
 ## 查看目前資料庫中列表所佔用空間   
 
 ```  
