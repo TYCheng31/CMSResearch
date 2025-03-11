@@ -1,3 +1,6 @@
+# CMSDB(PostgreSQL)相關指令  
+## 查看目前資料庫中列表所佔用空間   
+
 ```  
 SELECT
     relname AS table_name,
