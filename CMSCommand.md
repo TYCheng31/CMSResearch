@@ -1,4 +1,4 @@
-# CMS Note
+# CMSCommand相關指令
 CMS 可執行指令列表
 ```  
 compgen -c | grep cms
