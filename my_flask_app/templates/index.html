@@ -8,14 +8,23 @@
         .hidden {
             display: none;
         }
+
+
     </style>
     <script>
         // 切換隱藏和顯示欄位
-        function toggleColumn(columnClass) {
+        function toggleColumn(columnClass, button) {
             var elements = document.querySelectorAll("." + columnClass);
             elements.forEach(function(element) {
                 element.classList.toggle("hidden");
             });
+
+            // 按鈕顯示變更
+            if (button.innerText === '顯示題目') {
+                button.innerText = '隱藏題目';
+            } else {
+                button.innerText = '顯示題目';
+            }
         }
     </script>
 </head>
@@ -25,8 +34,8 @@
         <button type="submit">取得結果</button>
     </form>
 
-    <!-- 切換欄位顯示/隱藏的按鈕 -->
-    <button onclick="toggleColumn('quiz-column')">隱藏題目</button>
+    <!-- 初始隱藏題目的按鈕，按下後切換顯示或隱藏 -->
+    <button id="toggleButton" class="show-column-button" onclick="toggleColumn('quiz-column', this)">顯示題目</button>
 
     <!-- 判斷是否有 CSV 資料 -->
     {% if csv_data %}
@@ -34,7 +43,7 @@
             <!-- 顯示表頭 -->
             <tr>
                 {% for header in csv_data[0] %}
-                    <th class="{% if header in ['Quiz1Q1分數', 'Quiz1Q2分數', 'Quiz1Q3分數', 'Quiz1Q4分數', 'Quiz1Q5分數', 'Quiz1Q6分數'] %}quiz-column{% endif %}">
+                    <th class="{% if header in ['Quiz1Q1分數', 'Quiz1Q2分數', 'Quiz1Q3分數', 'Quiz1Q4分數', 'Quiz1Q5分數', 'Quiz1Q6分數'] %}quiz-column hidden{% endif %}">
                         {{ header }}
                     </th>
                 {% endfor %}
@@ -43,7 +52,7 @@
             {% for row in csv_data[1:] %}
                 <tr>
                     {% for cell in row %}
-                        <td class="{% if csv_data[0][loop.index0] in ['Quiz1Q1分數', 'Quiz1Q2分數', 'Quiz1Q3分數', 'Quiz1Q4分數', 'Quiz1Q5分數', 'Quiz1Q6分數'] %}quiz-column{% endif %}">
+                        <td class="{% if csv_data[0][loop.index0] in ['Quiz1Q1分數', 'Quiz1Q2分數', 'Quiz1Q3分數', 'Quiz1Q4分數', 'Quiz1Q5分數', 'Quiz1Q6分數'] %}quiz-column hidden{% endif %}">
                             {{ cell }}
                         </td>
                     {% endfor %}
@@ -55,4 +64,3 @@
     {% endif %}
 </body>
 </html>
-
