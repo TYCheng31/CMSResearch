@@ -164,4 +164,3 @@ def process_data():
 
 # 呼叫處理函式
 process_data()
-
