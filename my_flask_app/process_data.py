@@ -1,53 +1,61 @@
-# process_data.py
-
 import psycopg2
+import pandas as pd
 import csv
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 def process_data():
     # 連接資料庫
     conn = psycopg2.connect(
         dbname="cmsdb",
         user="postgres",
-        password="postgres",
+        password="0000",
         host="localhost",
         port="5432"
     )
-
     cur = conn.cursor()
 
-    user_contest_scores = {}
+    # 存每一筆繳交資料，包含使用者，考試名稱，開始時間，繳交時間，分數，題目名稱
+    user_contest_scores = []
 
     # 查詢 submission_results 資料，根據 submission_id 獲得 score
     cur.execute("SELECT submission_id, score FROM submission_results")
     submission_results = cur.fetchall()
 
     for submission_result in submission_results:
-        submission_id = submission_result[0]
-        score = submission_result[1]
+        submission_id = submission_result[0]  # 提取 submission_id
+        score = submission_result[1]         # 提取 score
 
         # 根據 submission_id 查詢 submissions 資料，獲取 participation_id, task_id, timestamp
         cur.execute("SELECT participation_id, task_id, timestamp FROM submissions WHERE id = %s", (submission_id,))
         submission_data = cur.fetchone()
         if submission_data:
-            participation_id, task_id, timestamp = submission_data
+            participation_id = submission_data[0]
+            task_id = submission_data[1]
+            timestamp = submission_data[2]
+
+            cur.execute("SELECT name FROM tasks WHERE id = %s", (task_id,))
+            tasks_data = cur.fetchone()
+            if tasks_data:
+                task_name = tasks_data[0]
 
             # 根據 participation_id 查詢 participations 資料，獲取 contest_id 和 user_id
             cur.execute("SELECT contest_id, user_id FROM participations WHERE id = %s", (participation_id,))
             participation_data = cur.fetchone()
             if participation_data:
-                contest_id, user_id = participation_data
+                contest_id = participation_data[0]
+                user_id = participation_data[1]
 
-                # contest_name, start
+                # 根據 contest_id 查詢 contests 資料，獲取 contest_name 和 start
                 cur.execute("SELECT name, start FROM contests WHERE id = %s", (contest_id,))
                 contest_data = cur.fetchone()
                 if contest_data:
-                    contest_name, contest_start = contest_data
+                    contest_name = contest_data[0]
+                    contest_start = contest_data[1]
                 else:
                     contest_name = "Unknown"
                     contest_start = "Unknown"
 
-                # first_name
+                # 根據 user_id 查詢 users 資料，獲取 first_name
                 cur.execute("SELECT first_name FROM users WHERE id = %s", (user_id,))
                 user_data = cur.fetchone()
                 if user_data:
@@ -55,132 +63,105 @@ def process_data():
                 else:
                     first_name = "Unknown"
 
-                if (user_id, contest_id) not in user_contest_scores:
-                    user_contest_scores[(user_id, contest_id)] = {
-                        "first_name": first_name,
-                        "contest_name": contest_name,
-                        "contest_start": contest_start,
-                        "total_score": score,
-                        "task_scores": {task_id: score},
-                        "timestamps": {task_id: timestamp},
-                        "task_earliest_correct": {}
-                    }
-                    if score == 10:
-                        user_contest_scores[(user_id, contest_id)]["task_earliest_correct"][task_id] = timestamp
-                else:
-                    user_data_dict = user_contest_scores[(user_id, contest_id)]
+                # 計算作答時間（繳交時間 - 開始時間）
+                if contest_start != "Unknown":
+                    contest_start = contest_start.replace(tzinfo=None)  # 去除時區資訊
+                    answer_time = timestamp - contest_start
+                    answer_time_str = str(answer_time)
 
-                    if task_id not in user_data_dict["task_scores"]:
-                        user_data_dict["task_scores"][task_id] = score
-                        user_data_dict["timestamps"][task_id] = timestamp
-                    else:
-                        current_score = user_data_dict["task_scores"][task_id]
-                        current_timestamp = user_data_dict["timestamps"][task_id]
-                        if score > current_score:
-                            user_data_dict["task_scores"][task_id] = score
-                            user_data_dict["timestamps"][task_id] = timestamp
-                        elif score == current_score and timestamp < current_timestamp:
-                            user_data_dict["timestamps"][task_id] = timestamp
+                # 準備記錄每次提交的資訊
+                user_contest_scores.append({
+                    "使用者": first_name,
+                    "考試名稱": contest_name,
+                    "開始時間": contest_start.strftime("%Y-%m-%d %H:%M:%S") if contest_start != "Unknown" else contest_start,
+                    "繳交時間": timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+                    "作答時間": answer_time_str,
+                    "分數": score,
+                    "題目名稱": task_name,
+                })
 
-                    if score == 10:
-                        if task_id not in user_data_dict["task_earliest_correct"]:
-                            user_data_dict["task_earliest_correct"][task_id] = timestamp
-                        else:
-                            recorded_timestamp = user_data_dict["task_earliest_correct"][task_id]
-                            if timestamp < recorded_timestamp:
-                                user_data_dict["task_earliest_correct"][task_id] = timestamp
+    # 使用 pandas 將結果轉換為 DataFrame
+    df = pd.DataFrame(user_contest_scores)
 
-                    user_data_dict["total_score"] = sum(user_data_dict["task_scores"].values())
+    # 過濾掉分數為 0 的資料
+    df_filtered = df[df["分數"] != 0]
 
-    final_results = []
+    # 先排序資料，先依使用者、考試名稱、題目名稱分組，再按照分數降序排列，若分數相同則按照繳交時間升序排列
+    df_sorted = df_filtered.sort_values(by=["使用者", "考試名稱", "題目名稱", "分數", "繳交時間"], ascending=[True, True, True, False, True])
 
-    for (user_id, contest_id), data in user_contest_scores.items():
-        latest_timestamp = max(data["timestamps"].values())
-        contest_start = data["contest_start"]
-        time_difference = latest_timestamp - contest_start
-        total_seconds = int(time_difference.total_seconds())
-        hours, remainder = divmod(total_seconds, 3600)
-        minutes, seconds = divmod(remainder, 60)
-        time_difference_str = f"{hours:02}:{minutes:02}:{seconds:02}"
+    # 合併相同使用者、考試名稱、題目名稱的資料
+    df_grouped = df_sorted.groupby(["使用者", "考試名稱", "題目名稱"], as_index=False).first()
 
-        correct_count = len(data["task_earliest_correct"])
+    # 設定 CSV 檔案路徑
+    csv_path = "/home/cms/my_flask_app/static/aggregated_output.csv"
 
-        if data["first_name"].startswith("S"):
-            final_results.append({
-                "first_name": data["first_name"],
-                "contest_name": data["contest_name"],
-                "contest_start": contest_start.strftime("%Y-%m-%d %H:%M:%S"),
-                "timestamp": latest_timestamp.strftime("%Y-%m-%d %H:%M:%S"),
-                "total_score": data["total_score"],
-                "time_difference_str": time_difference_str,  # 保留字串顯示
-                "time_difference_seconds": total_seconds,     # 另外存秒數用於排序
-                "correct_count": correct_count
-            })
+    # 開啟 CSV 檔案進行寫入
+    df_grouped.to_csv(csv_path, index=False, encoding="utf-8")
+    
+    print(f"整合後的 CSV 檔案已生成：{csv_path}")
 
-    # ※ 整合相同使用者的結果
-    aggregated_results = {}
-    for result in final_results:
-        first_name = result["first_name"]
-        total_score = result["total_score"]
-        correct_count = result["correct_count"]
-        time_diff_seconds = result["time_difference_seconds"]
+    ###########################################################################################################################
+    # 讀取 CSV 檔案
+    data = pd.read_csv(csv_path)
 
-        if first_name not in aggregated_results:
-            aggregated_results[first_name] = {
-                "first_name": first_name,
-                "total_score": total_score,
-                "time_difference_seconds": time_diff_seconds,
-                "correct_count": correct_count
-            }
+    # 處理時間欄位，將 "作答時間" 轉換為 timedelta 格式
+    data['作答時間'] = pd.to_timedelta(data['作答時間'])
+
+    # 依據每位使用者進行分組，並計算每一位使用者的各題分數總和
+    result = data.groupby('使用者').agg(
+        Quiz1Q1分數=('分數', lambda x: x[data['題目名稱'] == 'Quiz1Q1'].sum() if 'Quiz1Q1' in data['題目名稱'].values else 0),
+        Quiz1Q2分數=('分數', lambda x: x[data['題目名稱'] == 'Quiz1Q2'].sum() if 'Quiz1Q2' in data['題目名稱'].values else 0),
+        Quiz1Q3分數=('分數', lambda x: x[data['題目名稱'] == 'Quiz1Q3'].sum() if 'Quiz1Q3' in data['題目名稱'].values else 0),
+        Quiz1Q4分數=('分數', lambda x: x[data['題目名稱'] == 'Quiz1Q4'].sum() if 'Quiz1Q4' in data['題目名稱'].values else 0),
+        Quiz1Q5分數=('分數', lambda x: x[data['題目名稱'] == 'Quiz1Q5'].sum() if 'Quiz1Q5' in data['題目名稱'].values else 0),
+        Quiz1Q6分數=('分數', lambda x: x[data['題目名稱'] == 'Quiz1Q6'].sum() if 'Quiz1Q6' in data['題目名稱'].values else 0),
+        最晚作答時間=('作答時間', 'max')  # 這裡將最晚作答時間更新為作答時間中最晚的紀錄
+    ).reset_index()
+
+    # 計算總分
+    result['總分'] = result[['Quiz1Q1分數', 'Quiz1Q2分數', 'Quiz1Q3分數', 'Quiz1Q4分數', 'Quiz1Q5分數', 'Quiz1Q6分數']].sum(axis=1)
+
+    # 檢查是否有 20 分的題目，如果沒有，將作答時間設為 0
+    def check_for_20_and_update_time(user_data):
+        # 篩選出分數為 20 的題目
+        valid_data = user_data[user_data['分數'] == 20]
+        
+        if valid_data.empty:
+            # 如果沒有得到 20 分的題目，作答時間設為 0
+            return pd.Timedelta(0)
         else:
-            aggregated_results[first_name]["total_score"] += total_score
-            aggregated_results[first_name]["time_difference_seconds"] += time_diff_seconds
-            aggregated_results[first_name]["correct_count"] += correct_count
+            # 否則，取作答時間最晚的紀錄
+            return valid_data['作答時間'].max()
 
-    # ※ 將整合後的結果轉為列表，並重新計算 time_difference_str
-    final_aggregated_results = []
-    for data in aggregated_results.values():
-        total_seconds = data["time_difference_seconds"]
-        hours, remainder = divmod(total_seconds, 3600)
-        minutes, seconds = divmod(remainder, 60)
-        time_difference_str = f"{hours:02}:{minutes:02}:{seconds:02}"
+    # 使用 apply 來處理每位使用者的最晚繳交時間
+    result['最晚作答時間'] = result['使用者'].apply(lambda user: check_for_20_and_update_time(data[data['使用者'] == user]))
 
-        final_aggregated_results.append({
-            "first_name": data["first_name"],
-            "total_score": data["total_score"],
-            "correct_count": data["correct_count"],
-            "time_difference_str": time_difference_str,
-            "time_difference_seconds": total_seconds
-        })
+    # 將 '總分' 欄位移動到 '使用者' 之後
+    cols = ['使用者', '總分', 'Quiz1Q1分數', 'Quiz1Q2分數', 'Quiz1Q3分數', 'Quiz1Q4分數', 'Quiz1Q5分數', 'Quiz1Q6分數', '最晚作答時間']
+    result = result[cols]
 
-    # === 排序規則: 1) total_score 由高到低, 2) correct_count 由高到低, 3) time_difference_seconds 由少到多
-    final_aggregated_results_sorted = sorted(
-        final_aggregated_results,
-        key=lambda x: (
-            -x["total_score"],             # 由高到低
-            -x["correct_count"],           # 由高到低
-             x["time_difference_seconds"]  # 由少到多
-        )
+    # 排名：依照總分、20分題數排序
+    def count_20_score_tasks(user_data):
+        return (user_data['分數'] == 20).sum()
+
+    # 使用 apply 計算得到 20 分的題目數量
+    result['得到20分題數'] = result['使用者'].apply(lambda user: count_20_score_tasks(data[data['使用者'] == user]))
+
+    # 根據多個條件進行排序
+    result_sorted = result.sort_values(
+        by=['總分', '得到20分題數'],
+        ascending=[False, False]  # 總分降序、得到 20 分的題數降序
     )
 
-    csv_path = "/home/cms/my_flask_app/static/aggregated_output.csv"
-    with open(csv_path, "w", newline="", encoding="utf-8") as csvfile:
-        # 寫入時僅需以下欄位
-        fieldnames = ["first_name", "total_score", "correct_count", "time_difference"]
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        writer.writeheader()
+    # 儲存排序後的結果
+    result_sorted.to_csv('/home/cms/my_flask_app/static/sorted_result.csv', index=False)
 
-        for result in final_aggregated_results_sorted:
-            writer.writerow({
-                "first_name": result["first_name"],
-                "total_score": result["total_score"],
-                "correct_count": result["correct_count"],
-                "time_difference": result["time_difference_str"]  # 寫入顯示用字串
-            })
+    print("/home/cms/my_flask_app/static/sorted_result.csv 已生成")
 
+    # 關閉資料庫連接
     cur.close()
     conn.close()
 
-    print(final_aggregated_results_sorted)
-    print(f"整合後的 CSV 檔案已生成：{csv_path}")
+# 呼叫處理函式
+process_data()
 
