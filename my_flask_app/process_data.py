@@ -164,4 +164,7 @@ def process_data():
 
 # 呼叫處理函式
 process_data()
+<<<<<<< HEAD
 
+=======
+>>>>>>> 77f00d80fa3684f76b819e55cf81c5a9ca097096
