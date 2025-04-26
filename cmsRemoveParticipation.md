@@ -13,7 +13,7 @@ for i in $(seq -w 1 75); do
   cmsRemoveParticipation -c 1 S$i
 done
 ```
-# *他跟Contest的已加入User綁在一起，考試的已加入user會被刪除，所以考試需要重新加入User  
+*他跟Contest的已加入User綁在一起，考試的已加入user會被刪除，所以考試需要重新加入User  
 ```
 for i in $(seq -w 1 75); do
   cmsAddParticipation -c 8 S$i
