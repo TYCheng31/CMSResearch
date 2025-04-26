@@ -11,6 +11,6 @@
 ### 他跟Contest的已加入User綁在一起，所以考試需要重加入User
 ```
 for i in $(seq -w 1 75); do
-  cmsRemoveParticipation -c 1  S$i
+  cmsRemoveParticipation -c 1 S$i
 done
 ```
