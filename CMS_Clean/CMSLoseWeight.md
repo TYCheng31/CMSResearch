@@ -10,7 +10,11 @@ Contest,task,user設定紀錄會保留
 
 
 # Shell Script  
-
+給權限不然不能執行
+```
 chmod +x MYClean.sh
-
+```
+執行
+```
 ./MYClean.sh
+```
