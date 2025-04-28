@@ -25,7 +25,7 @@ done
 ```
 MYClean.sh可以自動化全部刪除及重新加入使用者  
 
-# Shell Script  
+## Shell Script  
 給權限不然不能執行  
 ```
 chmod +x MYClean.sh
