@@ -2,7 +2,7 @@
 
 read -p "輸入要清理的 contest ID: " contest_id
 
-read -p "確定要清除並重建 S01 ~ S75 的 submissions 和 participation？(y/n): " confirm
+read -p "確定要清除並重建 S01 ~ S75 的記錄？(y/n): " confirm
 
 if [[ "$confirm" != "y" ]]; then
   echo "操作取消。"
