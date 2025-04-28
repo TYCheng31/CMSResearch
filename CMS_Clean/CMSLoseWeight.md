@@ -8,3 +8,9 @@ Contest,task,user設定紀錄會保留
   
 2.刪除ranking,questions->https://github.com/TYCheng31/CMSExtend/blob/main/cmsRemoveParticipation.md#cmsremoveparticipation    
 
+
+# Shell Script  
+
+chmod +x MYClean.sh
+
+./MYClean.sh
