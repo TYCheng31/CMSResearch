@@ -19,3 +19,4 @@ for i in $(seq -w 1 75); do
   cmsAddParticipation -c 1 S$i
 done
 ```
+MYClean.sh可以自動化全部刪除及重新加入使用者  
