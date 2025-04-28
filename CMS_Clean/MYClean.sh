@@ -9,11 +9,6 @@ if [[ "$confirm" != "y" ]]; then
   exit 1
 fi
 
-echo "Remove Submissions..."
-for i in $(seq -w 1 75); do
-  yes | sudo cmsRemoveSubmissions -c "$contest_id" -u S$i
-done
-
 echo "Remove Participation..."
 for i in $(seq -w 1 75); do
   cmsRemoveParticipation -c "$contest_id" S$i
